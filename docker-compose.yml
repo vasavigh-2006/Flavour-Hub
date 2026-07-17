@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: recipe-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - recipe-network
+    # Uncomment to use MongoDB service
+    # restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: recipe-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - recipe-network
+    # Uncomment to use Redis service
+    # restart: unless-stopped
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: recipe-server
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./server:/app
+      - ./server/uploads:/app/uploads
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - recipe-network
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: recipe-client
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - recipe-network
+    restart: unless-stopped
+
+networks:
+  recipe-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+

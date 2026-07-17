@@ -1,0 +1,146 @@
+{
+  "info": {
+    "name": "Premium Recipe Generator API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"dob\": \"1990-01-01\",\n  \"password\": \"Test1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const jsonData = pm.response.json();",
+                  "  pm.environment.set('accessToken', jsonData.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Get Recipes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Recipe\",\n  \"description\": \"A test recipe\",\n  \"ingredients\": [\n    {\"name\": \"flour\", \"qty\": 2, \"unit\": \"cups\"}\n  ],\n  \"steps\": [\"Mix ingredients\", \"Bake\"],\n  \"prepTime\": 15,\n  \"cookTime\": 30,\n  \"servings\": 4\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Generator",
+      "item": [
+        {
+          "name": "Generate Recipes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ingredients\": \"chicken, tomatoes, onions\",\n  \"maxTime\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/generator",
+              "host": ["{{base_url}}"],
+              "path": ["api", "generator"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    }
+  ]
+}
+

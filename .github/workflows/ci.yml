@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Run server tests
+        run: |
+          cd server
+          npm test
+        env:
+          MONGODB_URI: mongodb://localhost:27017/test
+          JWT_ACCESS_SECRET: test_secret
+          JWT_REFRESH_SECRET: test_refresh_secret
+          NODE_ENV: test
+
+      - name: Install client dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Run client tests
+        run: |
+          cd client
+          npm test -- --coverage --watchAll=false
+        env:
+          CI: true
+
+      - name: Lint server
+        run: |
+          cd server
+          npm run lint || echo "Linting not configured"
+
+      - name: Lint client
+        run: |
+          cd client
+          npm run lint || echo "Linting not configured"
+
+
