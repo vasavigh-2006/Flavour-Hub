@@ -19,6 +19,12 @@ FlavourHub is a full-stack recipe platform where users can explore thousands of 
 
 ---
 
+## 🌍 Authentic Recipe Names
+
+We use authentic, international recipe names (like *Tonkatsu*, *Kumpir*, or *Kedgeree*) so users can discover real, traditional dishes from different countries rather than just generic food names. This makes exploring new cultures easy and fun!
+
+---
+
 ##  Tech Stack
 
 ### Frontend
