@@ -9,14 +9,13 @@ FlavourHub is a full-stack recipe platform where users can explore thousands of 
 ##  Features
 
 - 🔐 **User Authentication** — Secure JWT-based login & registration with email verification
-- 🌍 **Recipe Discovery** — Browse 1000+ recipes from TheMealDB API with search & category filters
+- 🌍 **Recipe Discovery** — Browse 100+ recipes from TheMealDB API with search & category filters
 - 📝 **Community Recipes** — Create, edit, and share your own recipes with image uploads
 - ❤️ **Save & Like** — Bookmark favourite recipes and like community posts
 - 💬 **Comments** — Engage with the community through recipe comments
 - 📄 **PDF Export** — Download any recipe as a beautifully branded PDF with images
-- 👑 **Admin Dashboard** — Manage users, reports, and community content
 - 🌙 **Dark / Light Mode** — Smooth theme toggle with warm, vibrant colours
-- 📱 **Fully Responsive** — Works seamlessly on desktop, tablet, and mobile
+- 📱 **Fully Responsive** — Works seamlessly on desktop
 
 ---
 
