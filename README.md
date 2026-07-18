@@ -6,7 +6,7 @@ FlavourHub is a full-stack recipe platform where users can explore thousands of 
 
 ---
 
-## ✨ Features
+##  Features
 
 - 🔐 **User Authentication** — Secure JWT-based login & registration with email verification
 - 🌍 **Recipe Discovery** — Browse 1000+ recipes from TheMealDB API with search & category filters
@@ -20,7 +20,7 @@ FlavourHub is a full-stack recipe platform where users can explore thousands of 
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 | Technology | Purpose |
@@ -69,7 +69,7 @@ flavourhub/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js v18+
@@ -141,7 +141,7 @@ Backend runs at: `http://localhost:5000`
 
 ## 📄 License
 
-This project was built as a final year web development project.
+This project was built as a 3rd semester web development project.
 
 ---
 
