@@ -15,7 +15,7 @@ FlavourHub is a full-stack recipe platform where users can explore thousands of 
 - 💬 **Comments** — Engage with the community through recipe comments
 - 📄 **PDF Export** — Download any recipe as a beautifully branded PDF with images
 - 🌙 **Dark / Light Mode** — Smooth theme toggle with warm, vibrant colours
-- 📱 **Fully Responsive** — Works seamlessly on desktop
+- 📱 **Fully Responsive** — Works seamlessly on desktop, tablet, and mobile
 
 ---
 
