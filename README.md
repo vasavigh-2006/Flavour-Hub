@@ -83,7 +83,7 @@ cd Flavour-Hub
 
 ### 2. Install Dependencies
 ```bash
-npm run install:all
+npm install
 ```
 
 ### 3. Configure Environment Variables
