@@ -147,5 +147,5 @@ This project was built as a 3rd semester web development project.
 
 <div align="center">
   <strong>Built with ❤️ by Vasavi</strong><br/>
-  <em>FlavourHub — Where Every Recipe Tells a Story</em>
+  
 </div>
