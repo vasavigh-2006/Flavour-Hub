@@ -62,7 +62,8 @@ flavourhub/
 │       ├── models/         # MongoDB schemas
 │       ├── middleware/     # Auth, rate limiter, uploads
 │       └── utils/          # PDF, JWT, email, cache helpers
-├── docs/                   # API documentation & guides
+├── docs/                   # API documentation & Postman collection
+├── scripts/                # Setup & utility helper scripts
 ├── docker-compose.yml      # Docker setup
 └── package.json            # Root workspace
 ```
