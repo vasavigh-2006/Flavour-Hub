@@ -9,8 +9,8 @@
     "client"
   ],
   "scripts": {
-    "setup": "node setup.js",
-    "check": "node check-setup.js",
+    "setup": "node scripts/setup.js",
+    "check": "node scripts/check-setup.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
