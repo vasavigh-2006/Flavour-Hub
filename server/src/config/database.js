@@ -13,34 +13,41 @@ const ensureSavedRecipeIndexes = async () => {
     'userId_1_mealdbId_1',
   ]);
 
-  const currentIndexes = await collection.indexes();
-
-  // Drop any unexpected indexes that could limit saving behavior
-  for (const index of currentIndexes) {
-    if (!allowedIndexNames.has(index.name)) {
-      await collection.dropIndex(index.name);
-      logger.warn(`[SavedRecipe] Dropped unexpected index: ${index.name}`);
-    }
-  }
-
-  // Drop old sparse index if it exists (will be replaced with partial index)
   try {
-    await collection.dropIndex('userId_1_recipeId_1');
-    logger.info('[SavedRecipe] Dropped old sparse unique index: userId_1_recipeId_1');
-  } catch (error) {
-    if (error.code !== 27) { // 27 = IndexNotFound
-      logger.warn(`[SavedRecipe] Error dropping old index: ${error.message}`);
-    }
-  }
+    const currentIndexes = await collection.indexes();
 
-  // Drop old sparse index for mealdbId if it exists (will be replaced with partial index)
-  try {
-    await collection.dropIndex('userId_1_mealdbId_1');
-    logger.info('[SavedRecipe] Dropped old sparse unique index: userId_1_mealdbId_1');
-  } catch (error) {
-    if (error.code !== 27) { // 27 = IndexNotFound
-      logger.warn(`[SavedRecipe] Error dropping old mealdbId index: ${error.message}`);
+    // Drop any unexpected indexes that could limit saving behavior
+    for (const index of currentIndexes) {
+      if (!allowedIndexNames.has(index.name)) {
+        await collection.dropIndex(index.name);
+        logger.warn(`[SavedRecipe] Dropped unexpected index: ${index.name}`);
+      }
     }
+
+    // Drop old sparse index if it exists (will be replaced with partial index)
+    try {
+      await collection.dropIndex('userId_1_recipeId_1');
+      logger.info('[SavedRecipe] Dropped old sparse unique index: userId_1_recipeId_1');
+    } catch (error) {
+      if (error.code !== 27) { // 27 = IndexNotFound
+        logger.warn(`[SavedRecipe] Error dropping old index: ${error.message}`);
+      }
+    }
+
+    // Drop old sparse index for mealdbId if it exists (will be replaced with partial index)
+    try {
+      await collection.dropIndex('userId_1_mealdbId_1');
+      logger.info('[SavedRecipe] Dropped old sparse unique index: userId_1_mealdbId_1');
+    } catch (error) {
+      if (error.code !== 27) { // 27 = IndexNotFound
+        logger.warn(`[SavedRecipe] Error dropping old mealdbId index: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    if (error.codeName !== 'NamespaceNotFound' && !error.message.includes('ns does not exist')) {
+      throw error;
+    }
+    logger.info('[SavedRecipe] Collection does not exist yet. Skipping index cleanup.');
   }
 
   // Create PARTIAL unique index for recipeId - only enforces uniqueness when recipeId exists
@@ -84,24 +91,31 @@ const ensureSavedRecipeIndexes = async () => {
 const ensureRecipeIndexes = async () => {
   const collection = Recipe.collection;
   
-  // Drop old unique index if it exists (without partial filter)
   try {
-    await collection.dropIndex('createdBy_1_mealdbId_1');
-    logger.info('[Recipe] Dropped old unique index: createdBy_1_mealdbId_1');
-  } catch (error) {
-    if (error.code !== 27) { // 27 = IndexNotFound
-      logger.warn(`[Recipe] Error dropping old index: ${error.message}`);
+    // Drop old unique index if it exists (without partial filter)
+    try {
+      await collection.dropIndex('createdBy_1_mealdbId_1');
+      logger.info('[Recipe] Dropped old unique index: createdBy_1_mealdbId_1');
+    } catch (error) {
+      if (error.code !== 27) { // 27 = IndexNotFound
+        logger.warn(`[Recipe] Error dropping old index: ${error.message}`);
+      }
     }
-  }
-  
-  // Also try dropping if it was created with userId instead of createdBy
-  try {
-    await collection.dropIndex('userId_1_mealdbId_1');
-    logger.info('[Recipe] Dropped old unique index: userId_1_mealdbId_1');
-  } catch (error) {
-    if (error.code !== 27) {
-      logger.warn(`[Recipe] Error dropping userId index: ${error.message}`);
+    
+    // Also try dropping if it was created with userId instead of createdBy
+    try {
+      await collection.dropIndex('userId_1_mealdbId_1');
+      logger.info('[Recipe] Dropped old unique index: userId_1_mealdbId_1');
+    } catch (error) {
+      if (error.code !== 27) {
+        logger.warn(`[Recipe] Error dropping userId index: ${error.message}`);
+      }
     }
+  } catch (error) {
+    if (error.codeName !== 'NamespaceNotFound' && !error.message.includes('ns does not exist')) {
+      throw error;
+    }
+    logger.info('[Recipe] Collection does not exist yet. Skipping index cleanup.');
   }
 
   // Create PARTIAL unique index - only enforces uniqueness when mealdbId exists
