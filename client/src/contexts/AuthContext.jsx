@@ -2,6 +2,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Configure global axios baseURL for relative api endpoints (e.g., /api/auth/me)
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'http://localhost:5000/api');
+axios.defaults.baseURL = API_BASE_URL.endsWith('/api') 
+  ? API_BASE_URL.slice(0, -4) 
+  : API_BASE_URL;
+axios.defaults.withCredentials = true;
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
