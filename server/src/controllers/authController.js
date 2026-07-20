@@ -38,6 +38,7 @@ export const register = async (req, res, next) => {
       dob: new Date(dob),
       passwordHash,
       avatarUrl: avatarUrl || '',
+      emailVerified: true, // Auto-verify all users on sign up
       emailVerificationToken,
       emailVerificationExpires,
     });
@@ -121,14 +122,8 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // In development, allow login without email verification
-    if (!user.emailVerified && process.env.NODE_ENV === 'production') {
-      logger.warn(`[Login] Email not verified for: ${email}`);
-      return res.status(403).json({ error: 'Please verify your email before logging in' });
-    }
-    
-    // Auto-verify in development
-    if (!user.emailVerified && process.env.NODE_ENV === 'development') {
+    // Auto-verify if not already verified (allows older users to log in directly)
+    if (!user.emailVerified) {
       user.emailVerified = true;
       await user.save();
       logger.info(`[Login] Auto-verified email for: ${email}`);
