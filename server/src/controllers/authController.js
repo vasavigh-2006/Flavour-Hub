@@ -287,3 +287,70 @@ export const updateMe = async (req, res, next) => {
   }
 };
 
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      // For security, don't disclose if email doesn't exist
+      return res.json({ message: 'If that email is registered, a password reset link has been generated.' });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
+    await user.save();
+
+    const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+    const resetUrl = `${clientOrigin}/reset-password?token=${resetToken}`;
+
+    // Print to logs since SMTP is not configured
+    logger.info(`[ForgotPassword] Password reset token generated for user ${user.email}.`);
+    logger.info(`[ForgotPassword] Reset Link: ${resetUrl}`);
+
+    res.json({ message: 'If that email is registered, a password reset link has been generated.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { token, password } = req.body;
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    user.passwordHash = await bcrypt.hash(password, 12);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    
+    // Revoke all existing refresh tokens for security
+    await user.revokeAllRefreshTokens();
+    await user.save();
+
+    res.json({ message: 'Password has been reset successfully. You can now log in.' });
+  } catch (error) {
+    next(error);
+  }
+};
+

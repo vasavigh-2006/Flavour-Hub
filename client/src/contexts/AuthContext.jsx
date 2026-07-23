@@ -131,6 +131,53 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  const forgotPassword = async (email) => {
+    try {
+      if (!email) {
+        toast.error('Email is required');
+        return { success: false, error: 'Email is required' };
+      }
+
+      const response = await axios.post('/api/auth/forgot-password', {
+        email: email.trim().toLowerCase(),
+      });
+      
+      toast.success(response.data?.message || 'Password reset email generated.');
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.details ||
+                          error.message || 
+                          'Failed to generate password reset request.';
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    try {
+      if (!token || !password) {
+        toast.error('Token and password are required');
+        return { success: false, error: 'Missing token or password' };
+      }
+
+      const response = await axios.post('/api/auth/reset-password', {
+        token,
+        password,
+      });
+
+      toast.success(response.data?.message || 'Password has been reset successfully.');
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.details ||
+                          error.message || 
+                          'Failed to reset password.';
+      toast.error(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -139,6 +186,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     refreshToken,
     updateUser,
+    forgotPassword,
+    resetPassword,
     isAuthenticated: !!user,
     isPremium: user?.subscription?.planId === 'premium' || user?.subscription?.planId === 'pro',
     isAdmin: user?.role === 'admin',

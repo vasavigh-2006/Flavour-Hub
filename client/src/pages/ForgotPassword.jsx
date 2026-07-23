@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../logo.png';
 
-const Login = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { forgotPassword } = useAuth();
 
   useEffect(() => {
     if (darkMode) {
@@ -22,10 +21,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const result = await login(email, password);
+    const result = await forgotPassword(email);
     setLoading(false);
     if (result.success) {
-      navigate('/');
+      setSubmitted(true);
     }
   };
 
@@ -46,6 +45,7 @@ const Login = () => {
       >
         {darkMode ? '☀️' : '🌙'}
       </button>
+
       <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="glass-card p-8 shadow-2xl">
           <div className="flex flex-col items-center mb-6">
@@ -55,14 +55,15 @@ const Login = () => {
               className="h-16 w-16 object-contain rounded-xl shadow-md ring-2 ring-orange-500/10 mb-4"
             />
             <h2 className="text-center text-3xl font-extrabold text-premium mb-2">
-              Sign in to your account
+              Reset Password
             </h2>
             <p className="text-center text-premium-subtle text-sm">
-              Welcome back! Continue your culinary journey
+              We'll help you get back to your recipes
             </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
+
+          {!submitted ? (
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-premium-subtle mb-2">
                   Email address
@@ -78,55 +79,48 @@ const Login = () => {
                   placeholder="you@example.com"
                 />
               </div>
+
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-premium-subtle mb-2">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input-premium"
-                  placeholder="Enter your password"
-                />
-                <div className="flex justify-end mt-2">
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-medium text-premium hover:text-orange-600 transition-colors duration-300"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-premium w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Sending link...' : 'Send Reset Link'}
+                </button>
               </div>
-            </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-premium w-full disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-
-            <div className="text-center">
+              <div className="text-center">
+                <Link
+                  to="/login"
+                  className="font-medium text-premium hover:text-orange-600 transition-colors duration-300"
+                >
+                  Back to login
+                </Link>
+              </div>
+            </form>
+          ) : (
+            <div className="mt-8 text-center space-y-6">
+              <div className="rounded-lg bg-orange-50/50 dark:bg-orange-950/20 p-4 border border-orange-500/10">
+                <p className="text-premium text-sm leading-relaxed font-semibold">
+                  If that email is registered, a password reset link has been generated!
+                </p>
+                <p className="text-premium-subtle text-xs mt-3 leading-relaxed">
+                  Since email services are in development mode, please verify your reset link in the **Render backend logs** to complete the reset.
+                </p>
+              </div>
               <Link
-                to="/register"
-                className="font-medium text-premium hover:text-orange-600 transition-colors duration-300"
+                to="/login"
+                className="btn-premium inline-block w-full text-center"
               >
-                Don't have an account? Sign up
+                Return to Login
               </Link>
             </div>
-          </form>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default Login;
-
+export default ForgotPassword;
