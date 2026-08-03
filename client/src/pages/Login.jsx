@@ -99,14 +99,6 @@ const Login = () => {
                   className="input-premium"
                   placeholder="Enter your password"
                 />
-                <div className="flex justify-end mt-2">
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-medium text-premium hover:text-orange-600 transition-colors duration-300"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
               </div>
             </div>
 
