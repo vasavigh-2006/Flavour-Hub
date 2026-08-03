@@ -29,7 +29,7 @@ export const register = async (req, res, next) => {
     const emailVerificationExpires = new Date();
     emailVerificationExpires.setHours(emailVerificationExpires.getHours() + 24);
 
-    // Create user
+    // Create user with auto-verified status
     const user = await User.create({
       firstName,
       lastName,
@@ -38,6 +38,7 @@ export const register = async (req, res, next) => {
       dob: new Date(dob),
       passwordHash,
       avatarUrl: avatarUrl || '',
+      emailVerified: true,
       emailVerificationToken,
       emailVerificationExpires,
     });
@@ -116,12 +117,6 @@ export const login = async (req, res, next) => {
     if (!isPasswordValid) {
       logger.warn(`[Login] Invalid password for: ${email}`);
       return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    // Block unverified users in production
-    if (!user.emailVerified) {
-      logger.warn(`[Login] Email not verified for: ${email}`);
-      return res.status(403).json({ error: 'Please verify your email before logging in. Check your inbox for the verification link.' });
     }
 
     // Generate tokens

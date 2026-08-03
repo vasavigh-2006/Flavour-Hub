@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
   emailVerificationExpires: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  googleId: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
 }, {
   timestamps: true,
