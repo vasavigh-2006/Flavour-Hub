@@ -14,9 +14,7 @@ try {
     transporter = nodemailer.createTransport(
       isGmail
         ? {
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true, // SSL
+            service: 'gmail',
             auth: { user, pass },
             tls: { rejectUnauthorized: false },
             connectionTimeout: 10000,
@@ -34,6 +32,21 @@ try {
             socketTimeout: 15000,
           }
     );
+
+    // Safely log configuration status (masked)
+    const maskedUser = user ? `${user.substring(0, 3)}***@${user.split('@')[1] || ''}` : 'Not Set';
+    logger.info(`[Email Config] Initializing transport for user: ${maskedUser}`);
+
+    // Verify SMTP connection on startup
+    transporter.verify((error) => {
+      if (error) {
+        logger.error(`[SMTP Connection Error] Startup verification failed for ${maskedUser}: ${error.message || error}`);
+      } else {
+        logger.info(`[SMTP Connection Success] Server is ready to send emails for ${maskedUser}!`);
+      }
+    });
+  } else {
+    logger.warn('[Email Config] EMAIL_USER or EMAIL_PASS missing. Email features disabled.');
   }
 } catch (error) {
   console.warn('Email not configured, email features will be disabled', error);
