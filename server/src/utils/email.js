@@ -8,31 +8,30 @@ try {
     const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
     const isGmail = host.includes('gmail');
     
+    const user = process.env.EMAIL_USER.trim();
+    const pass = process.env.EMAIL_PASS.replace(/\s+/g, '');
+
     transporter = nodemailer.createTransport(
       isGmail
         ? {
-            service: 'gmail',
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS,
-            },
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true, // SSL
+            auth: { user, pass },
             tls: { rejectUnauthorized: false },
-            connectionTimeout: 5000,
-            greetingTimeout: 5000,
-            socketTimeout: 10000,
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
           }
         : {
             host: host,
             port: parseInt(process.env.EMAIL_PORT) || 587,
             secure: false,
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS,
-            },
+            auth: { user, pass },
             tls: { rejectUnauthorized: false },
-            connectionTimeout: 5000,
-            greetingTimeout: 5000,
-            socketTimeout: 10000,
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
           }
     );
   }
