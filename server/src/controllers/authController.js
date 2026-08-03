@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, generateTokenId, verifyRefreshToken } from '../utils/jwt.js';
-import { sendVerificationEmail } from '../utils/email.js';
+import { sendVerificationEmail, sendResetPasswordEmail } from '../utils/email.js';
 import logger from '../utils/logger.js';
 import { validationResult } from 'express-validator';
 
@@ -42,13 +42,10 @@ export const register = async (req, res, next) => {
       emailVerificationExpires,
     });
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, emailVerificationToken);
-    } catch (emailError) {
-      logger.error('Failed to send verification email', emailError);
-      // Don't fail registration if email fails
-    }
+    // Send verification email in background (non-blocking)
+    sendVerificationEmail(email, emailVerificationToken).catch((emailError) => {
+      logger.error('Failed to send verification email in background:', emailError);
+    });
 
     res.status(201).json({
       message: 'Registration successful. Please check your email to verify your account.',
@@ -309,7 +306,11 @@ export const forgotPassword = async (req, res, next) => {
     const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
     const resetUrl = `${clientOrigin}/reset-password?token=${resetToken}`;
 
-    // Print to logs since SMTP is not configured
+    // Send password reset email in background (non-blocking)
+    sendResetPasswordEmail(user.email, resetToken).catch((emailError) => {
+      logger.error('Failed to send reset email in background:', emailError);
+    });
+
     logger.info(`[ForgotPassword] Password reset token generated for user ${user.email}.`);
     logger.info(`[ForgotPassword] Reset Link: ${resetUrl}`);
 
