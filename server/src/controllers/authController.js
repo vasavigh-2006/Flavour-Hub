@@ -212,12 +212,17 @@ export const updateMe = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { firstName, lastName, avatarUrl } = req.body;
+    const { firstName, lastName, avatarUrl, username } = req.body;
     const user = await User.findById(req.user._id);
 
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
     if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+    if (username && username !== user.username) {
+      const taken = await User.findOne({ username: username.toLowerCase().trim() });
+      if (taken) return res.status(400).json({ error: 'Username already taken' });
+      user.username = username.toLowerCase().trim();
+    }
 
     await user.save();
 
