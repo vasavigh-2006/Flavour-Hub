@@ -45,7 +45,7 @@ We use authentic, international recipe names (like *Tonkatsu*, *Kumpir*, or *Ked
 | Multer | Image Upload Handling |
 | PDFKit | PDF Generation |
 | Node-Cache | API Response Caching |
-| Nodemailer | Email Verification |
+| GoogleOAuth | Email Verification |
 
 ---
 
