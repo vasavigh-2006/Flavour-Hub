@@ -69,8 +69,8 @@ export const sendVerificationEmail = async (email, token) => {
     await transporter.sendMail(mailOptions);
     logger.info(`Verification email sent to ${email}`);
   } catch (error) {
-    logger.error('Error sending verification email', error);
-    throw error;
+    logger.error(`[Email Fail] Could not send to ${email}: ${error.message || error}`);
+    logger.info(`[Fallback Verification Link]: ${verificationUrl}`);
   }
 };
 
@@ -125,7 +125,8 @@ export const sendResetPasswordEmail = async (email, token) => {
     await transporter.sendMail(mailOptions);
     logger.info(`Password reset email sent to ${email}`);
   } catch (error) {
-    logger.error('Error sending password reset email', error);
+    logger.error(`[Email Fail] Reset email failed for ${email}: ${error.message || error}`);
+    logger.info(`[Fallback Reset Link]: ${resetUrl}`);
   }
 };
 
