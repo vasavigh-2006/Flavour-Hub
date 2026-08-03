@@ -103,10 +103,17 @@ export const sendReceiptEmail = async (email, subscriptionDetails) => {
         <p>Your ${subscriptionDetails.planId} plan is now active.</p>
         <p><strong>Plan:</strong> ${subscriptionDetails.planId}</p>
         <p><strong>Status:</strong> ${subscriptionDetails.status}</p>
-        <p>You now have access to all premium features!</p>
       </div>
     `,
   };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    logger.info(`Receipt email sent to ${email}`);
+  } catch (error) {
+    logger.error('Error sending receipt email', error);
+  }
+};
 
 export const sendResetPasswordEmail = async (email, token) => {
   if (!transporter) {
