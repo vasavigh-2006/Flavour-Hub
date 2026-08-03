@@ -19,6 +19,7 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
+    username: '',
   });
   const [profileLoading, setProfileLoading] = useState(false);
 
@@ -57,6 +58,7 @@ const Profile = () => {
       setProfileData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
+        username: user.username || '',
       });
     }
   }, [user]);
@@ -168,6 +170,7 @@ const Profile = () => {
     setProfileData({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
+      username: user?.username || '',
     });
   };
 
@@ -176,6 +179,7 @@ const Profile = () => {
     setProfileData({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
+      username: user?.username || '',
     });
   };
 
@@ -186,6 +190,7 @@ const Profile = () => {
       const response = await api.put('/auth/me', {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
+        username: profileData.username,
       });
       updateUser(response.data.user);
       setIsEditing(false);
@@ -225,9 +230,9 @@ const Profile = () => {
               </label>
               <input
                 type="text"
-                value={user?.username || ''}
-                disabled
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                value={profileData.username}
+                onChange={(e) => setProfileData({ ...profileData, username: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
             </div>
             <div className="space-y-2">
