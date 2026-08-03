@@ -13,6 +13,8 @@ const Register = () => {
     password: '',
     confirmPassword: '',
   });
+  const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const { register } = useAuth();
@@ -28,12 +30,14 @@ const Register = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
     setLoading(true);
@@ -41,7 +45,9 @@ const Register = () => {
     const result = await register(userData);
     setLoading(false);
     if (result.success) {
-      navigate('/login');
+      setSubmitted(true);
+    } else {
+      setError(result.error || 'Registration failed. Please check your inputs.');
     }
   };
 
@@ -77,114 +83,141 @@ const Register = () => {
               Join our culinary community today
             </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-premium-subtle mb-2">First Name</label>
-                  <input
-                    name="firstName"
-                    type="text"
-                    required
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="input-premium"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-premium-subtle mb-2">Last Name</label>
-                  <input
-                    name="lastName"
-                    type="text"
-                    required
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="input-premium"
-                    placeholder="Doe"
-                  />
-                </div>
+          {submitted ? (
+            <div className="mt-6 text-center space-y-6">
+              <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800">
+                <p className="text-lg font-bold text-orange-600 dark:text-orange-400 mb-2">
+                  ✉️ Check your email!
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  We've sent a verification link to <strong className="text-gray-900 dark:text-white">{formData.email}</strong>. Please check your inbox (and spam folder) and click the link to activate your account before logging in.
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-premium-subtle mb-2">Username</label>
-                <input
-                  name="username"
-                  type="text"
-                  required
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="input-premium"
-                  placeholder="johndoe"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-premium-subtle mb-2">Email</label>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-premium"
-                  placeholder="you@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-premium-subtle mb-2">Date of Birth</label>
-                <input
-                  name="dob"
-                  type="date"
-                  required
-                  value={formData.dob}
-                  onChange={handleChange}
-                  className="input-premium"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-premium-subtle mb-2">Password</label>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-premium"
-                  placeholder="Create a password"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-premium-subtle mb-2">Confirm Password</label>
-                <input
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="input-premium"
-                  placeholder="Confirm your password"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-premium w-full disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Creating account...' : 'Sign up'}
-              </button>
-            </div>
-
-            <div className="text-center">
               <Link
                 to="/login"
-                className="font-medium text-premium hover:text-orange-600 transition-colors duration-300"
+                className="btn-premium inline-block w-full text-center"
               >
-                Already have an account? Sign in
+                Go to Login Page
               </Link>
             </div>
-          </form>
+          ) : (
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-premium-subtle mb-2">First Name</label>
+                    <input
+                      name="firstName"
+                      type="text"
+                      required
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className="input-premium"
+                      placeholder="John"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-premium-subtle mb-2">Last Name</label>
+                    <input
+                      name="lastName"
+                      type="text"
+                      required
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className="input-premium"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-premium-subtle mb-2">Username</label>
+                  <input
+                    name="username"
+                    type="text"
+                    required
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="input-premium"
+                    placeholder="johndoe"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-premium-subtle mb-2">Email</label>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="input-premium"
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-premium-subtle mb-2">Date of Birth</label>
+                  <input
+                    name="dob"
+                    type="date"
+                    required
+                    value={formData.dob}
+                    onChange={handleChange}
+                    className="input-premium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-premium-subtle mb-2">Password</label>
+                  <input
+                    name="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="input-premium"
+                    placeholder="Create a password"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Must be at least 8 chars with 1 uppercase, 1 lowercase, and 1 number (e.g. Password123).
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-premium-subtle mb-2">Confirm Password</label>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="input-premium"
+                    placeholder="Confirm your password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-premium w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Creating account...' : 'Sign up'}
+                </button>
+              </div>
+
+              <div className="text-center">
+                <Link
+                  to="/login"
+                  className="font-medium text-premium hover:text-orange-600 transition-colors duration-300"
+                >
+                  Already have an account? Sign in
+                </Link>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
