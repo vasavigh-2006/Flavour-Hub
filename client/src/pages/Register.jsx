@@ -45,7 +45,7 @@ const Register = () => {
     const result = await register(userData);
     setLoading(false);
     if (result.success) {
-      setSubmitted(true);
+      navigate('/login?registered=true');
     } else {
       setError(result.error || 'Registration failed. Please check your inputs.');
     }
@@ -83,24 +83,7 @@ const Register = () => {
               Join our culinary community today
             </p>
           </div>
-          {submitted ? (
-            <div className="mt-6 text-center space-y-6">
-              <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800">
-                <p className="text-lg font-bold text-orange-600 dark:text-orange-400 mb-2">
-                  ✉️ Check your email!
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                  We've sent a verification link to <strong className="text-gray-900 dark:text-white">{formData.email}</strong>. Please check your inbox (and spam folder) and click the link to activate your account before logging in.
-                </p>
-              </div>
-              <Link
-                to="/login"
-                className="btn-premium inline-block w-full text-center"
-              >
-                Go to Login Page
-              </Link>
-            </div>
-          ) : (
+          {(
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               {error && (
                 <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 text-sm">

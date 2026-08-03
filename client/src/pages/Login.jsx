@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../logo.png';
 
@@ -10,6 +10,8 @@ const Login = () => {
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const justRegistered = searchParams.get('registered') === 'true';
 
   useEffect(() => {
     if (darkMode) {
@@ -61,7 +63,12 @@ const Login = () => {
               Welcome back! Continue your culinary journey
             </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {justRegistered && (
+            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400 text-sm text-center">
+              🎉 Account created! You can now log in.
+            </div>
+          )}
+          <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-premium-subtle mb-2">
