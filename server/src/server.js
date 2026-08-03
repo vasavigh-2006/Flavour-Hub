@@ -21,7 +21,6 @@ import routes from './routes/index.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import logger from './utils/logger.js';
-import './config/passport.js';
 
 const app = express();
 const httpServer = createServer(app);

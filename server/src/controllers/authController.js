@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, generateTokenId, verifyRefreshToken } from '../utils/jwt.js';
-import { sendVerificationEmail, sendResetPasswordEmail } from '../utils/email.js';
+
 import logger from '../utils/logger.js';
 import { validationResult } from 'express-validator';
 
@@ -24,12 +24,7 @@ export const register = async (req, res, next) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Generate verification token
-    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
-    const emailVerificationExpires = new Date();
-    emailVerificationExpires.setHours(emailVerificationExpires.getHours() + 24);
-
-    // Create user with auto-verified status
+    // Create user (auto-verified)
     const user = await User.create({
       firstName,
       lastName,
@@ -39,50 +34,16 @@ export const register = async (req, res, next) => {
       passwordHash,
       avatarUrl: avatarUrl || '',
       emailVerified: true,
-      emailVerificationToken,
-      emailVerificationExpires,
-    });
-
-    // Send verification email in background (non-blocking)
-    sendVerificationEmail(email, emailVerificationToken).catch((emailError) => {
-      logger.error('Failed to send verification email in background:', emailError);
     });
 
     res.status(201).json({
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful! You can now log in.',
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
       },
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const verifyEmail = async (req, res, next) => {
-  try {
-    const { token } = req.query;
-    if (!token) {
-      return res.status(400).json({ error: 'Verification token is required' });
-    }
-
-    const user = await User.findOne({
-      emailVerificationToken: token,
-      emailVerificationExpires: { $gt: new Date() },
-    });
-
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid or expired verification token' });
-    }
-
-    user.emailVerified = true;
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpires = undefined;
-    await user.save();
-
-    res.json({ message: 'Email verified successfully' });
   } catch (error) {
     next(error);
   }
@@ -301,12 +262,7 @@ export const forgotPassword = async (req, res, next) => {
     const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
     const resetUrl = `${clientOrigin}/reset-password?token=${resetToken}`;
 
-    // Send password reset email in background (non-blocking)
-    sendResetPasswordEmail(user.email, resetToken).catch((emailError) => {
-      logger.error('Failed to send reset email in background:', emailError);
-    });
-
-    logger.info(`[ForgotPassword] Password reset token generated for user ${user.email}.`);
+    logger.info(`[ForgotPassword] Reset token generated for: ${user.email}`);
     logger.info(`[ForgotPassword] Reset Link: ${resetUrl}`);
 
     res.json({ message: 'If that email is registered, a password reset link has been generated.' });

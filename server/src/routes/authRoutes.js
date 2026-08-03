@@ -3,7 +3,6 @@ import passport from 'passport';
 import '../config/passport.js';
 import {
   register,
-  verifyEmail,
   login,
   refresh,
   logout,
@@ -26,7 +25,6 @@ import {
 const router = express.Router();
 
 router.post('/register', authLimiter, registerValidator, register);
-router.get('/verify-email', verifyEmail);
 router.post('/login', authLimiter, loginValidator, login);
 router.post('/refresh', refresh);
 router.post('/logout', authenticate, logout);
