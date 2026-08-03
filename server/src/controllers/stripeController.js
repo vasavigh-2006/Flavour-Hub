@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import User from '../models/User.js';
-import { sendReceiptEmail } from '../utils/email.js';
+
 import logger from '../utils/logger.js';
 
 let stripe;
@@ -137,11 +137,7 @@ const handleSubscriptionUpdate = async (customerId, subscriptionId, status) => {
   await user.save();
 
   if (status === 'active') {
-    try {
-      await sendReceiptEmail(user.email, user.subscription);
-    } catch (emailError) {
-      logger.error('Failed to send receipt email', emailError);
-    }
+    logger.info(`Subscription activated for user: ${user.email}`);
   }
 };
 
