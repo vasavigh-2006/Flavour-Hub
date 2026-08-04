@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_your_key');
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -22,36 +19,6 @@ const Profile = () => {
     username: '',
   });
   const [profileLoading, setProfileLoading] = useState(false);
-
-  const handleSubscribe = async (planId) => {
-    setLoading(true);
-    try {
-      const response = await api.post('/webhooks/stripe/create-checkout-session', { planId });
-      const { sessionId } = response.data;
-      const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error) {
-      toast.error('Failed to create checkout session');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription?')) return;
-    try {
-      await api.post('/webhooks/stripe/cancel');
-      toast.success('Subscription will be canceled at the end of the billing period');
-      // Refresh user data
-      const response = await api.get('/auth/me');
-      updateUser(response.data.user);
-    } catch (error) {
-      toast.error('Failed to cancel subscription');
-    }
-  };
 
   useEffect(() => {
     if (user) {
@@ -452,73 +419,7 @@ const Profile = () => {
         )}
       </div>
 
-      <div className="profile-section">
-        <h2 className="text-xl font-semibold mb-4 text-premium">Subscription</h2>
-        {user?.subscription?.planId === 'free' || !user?.subscription?.planId ? (
-          <div className="text-gray-900 dark:text-gray-300">
-            <p className="mb-4">You are currently on the Free plan.</p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="border p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">Pro Plan - $9.99/month</h3>
-                <ul className="text-sm space-y-1 mb-4">
-                  <li>✓ Advanced generator</li>
-                  <li>✓ Unlimited saves</li>
-                  <li>✓ PDF export</li>
-                </ul>
-                <button
-                  onClick={() => handleSubscribe('pro')}
-                  disabled={loading}
-                  className="w-full px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
-                >
-                  Subscribe to Pro
-                </button>
-              </div>
-              <div className="border p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">Premium Plan - $19.99/month</h3>
-                <ul className="text-sm space-y-1 mb-4">
-                  <li>✓ Everything in Pro</li>
-                  <li>✓ Nutrition macros</li>
-                  <li>✓ Calendar sync</li>
-                  <li>✓ Priority support</li>
-                </ul>
-                <button
-                  onClick={() => handleSubscribe('premium')}
-                  disabled={loading}
-                  className="w-full px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
-                >
-                  Subscribe to Premium
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-gray-900 dark:text-gray-300">
-            <p className="mb-2">
-              <strong>Current Plan:</strong> {user.subscription.planId.charAt(0).toUpperCase() + user.subscription.planId.slice(1)}
-            </p>
-            <p className="mb-2">
-              <strong>Status:</strong> {user.subscription.status}
-            </p>
-            {user.subscription.currentPeriodEnd && (
-              <p className="mb-4">
-                <strong>Renews:</strong>{' '}
-                {new Date(user.subscription.currentPeriodEnd).toLocaleDateString()}
-              </p>
-            )}
-            {!user.subscription.cancelAtPeriodEnd && (
-              <button
-                onClick={handleCancelSubscription}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Cancel Subscription
-              </button>
-            )}
-            {user.subscription.cancelAtPeriodEnd && (
-              <p className="text-yellow-600">Subscription will be canceled at the end of the billing period.</p>
-            )}
-          </div>
-        )}
-      </div>
+
     </div>
   );
 };
