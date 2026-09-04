@@ -428,14 +428,14 @@ export const deleteRecipe = async (req, res, next) => {
 export const likeRecipe = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+    const userId = req.user._id;
+
     // Check if it's a valid MongoDB ObjectId
     const isMongoId = /^[0-9a-fA-F]{24}$/.test(id);
-    
+
     if (!isMongoId) {
-      // This is a TheMealDB recipe - can't like external recipes
-      return res.status(400).json({ 
-        error: 'Cannot like external recipes from TheMealDB. Only user-created recipes can be liked.' 
+      return res.status(400).json({
+        error: 'Cannot like external recipes from TheMealDB. Only user-created recipes can be liked.'
       });
     }
 
@@ -444,9 +444,19 @@ export const likeRecipe = async (req, res, next) => {
       return res.status(404).json({ error: 'Recipe not found' });
     }
 
-    // In a real app, you'd track which users liked which recipes
-    // For simplicity, we'll just increment
-    recipe.likesCount = (recipe.likesCount || 0) + 1;
+    // Check if user already liked this recipe
+    const alreadyLiked = recipe.likedBy && recipe.likedBy.some(
+      uid => uid.toString() === userId.toString()
+    );
+
+    if (alreadyLiked) {
+      return res.status(400).json({ error: 'You have already liked this recipe' });
+    }
+
+    // Add user to likedBy and increment count
+    recipe.likedBy = recipe.likedBy || [];
+    recipe.likedBy.push(userId);
+    recipe.likesCount = recipe.likedBy.length;
     await recipe.save();
 
     res.json({ likesCount: recipe.likesCount });

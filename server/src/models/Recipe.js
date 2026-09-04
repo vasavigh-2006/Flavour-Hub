@@ -36,6 +36,7 @@ const recipeSchema = new mongoose.Schema({
   images: [{ type: String }],
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', sparse: true },
   likesCount: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   savesCount: { type: Number, default: 0 },
   comments: [commentSchema],
   nutrition: nutritionSchema,
