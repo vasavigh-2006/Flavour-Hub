@@ -8,6 +8,14 @@ import { useAuth } from '../contexts/AuthContext';
 const parseInstructions = (raw) => {
   if (!raw || !raw.trim()) return [];
 
+  const cleanStepText = (str) => {
+    return str
+      .replace(/^(?:step\s*\d+[:.)]?|\d+[:.)])\s*/i, '')
+      .replace(/\r?\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   // Helper to identify and discard useless step headers like "Step 1", "Step 2", "1." etc.
   const isStepHeader = (str) => {
     const s = str.trim().toLowerCase();
@@ -26,11 +34,11 @@ const parseInstructions = (raw) => {
   if (hasNumberedSteps) {
     parsed = raw
       .split(numberedPattern)
-      .map(s => s.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim())
+      .map(s => cleanStepText(s))
       .filter(s => s.length > 5 && !isStepHeader(s));
   } else {
     // 2. Proper newlines
-    const byNewline = raw.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 2);
+    const byNewline = raw.split(/\r?\n/).map(s => cleanStepText(s)).filter(s => s.length > 2);
     if (byNewline.length >= 2) {
       parsed = byNewline.filter(s => !isStepHeader(s));
     } else {
@@ -38,7 +46,7 @@ const parseInstructions = (raw) => {
       const sentences = raw
         .replace(/([.!?])\s+(?=[A-Z])/g, '$1|||')
         .split('|||')
-        .map(s => s.trim())
+        .map(s => cleanStepText(s))
         .filter(s => s.length > 5);
 
       // Merge very short sentences so steps are meaningful
@@ -57,7 +65,7 @@ const parseInstructions = (raw) => {
     }
   }
 
-  return parsed.filter(s => s.trim().length > 0 && !isStepHeader(s));
+  return parsed.map(s => cleanStepText(s)).filter(s => s.length > 0 && !isStepHeader(s));
 };
 
 const RecipeDetail = () => {

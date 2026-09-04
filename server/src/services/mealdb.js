@@ -139,6 +139,14 @@ export const getRandomMeals = async (count = 10) => {
 const parseInstructions = (raw) => {
   if (!raw || !raw.trim()) return [];
 
+  const cleanStepText = (str) => {
+    return str
+      .replace(/^(?:step\s*\d+[:.)]?|\d+[:.)])\s*/i, '')
+      .replace(/\r?\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   // Helper to identify and discard useless step headers like "Step 1", "Step 2", "1." etc.
   const isStepHeader = (str) => {
     const s = str.trim().toLowerCase();
@@ -157,20 +165,19 @@ const parseInstructions = (raw) => {
   if (hasNumberedSteps) {
     parsed = raw
       .split(numberedPattern)
-      .map(s => s.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim())
+      .map(s => cleanStepText(s))
       .filter(s => s.length > 5 && !isStepHeader(s));
   } else {
     // 2. Try splitting on explicit newlines (some recipes use these properly)
-    const byNewline = raw.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 2);
+    const byNewline = raw.split(/\r?\n/).map(s => cleanStepText(s)).filter(s => s.length > 2);
     if (byNewline.length >= 2) {
       parsed = byNewline.filter(s => !isStepHeader(s));
     } else {
       // 3. Fallback: split one big paragraph into sentences on '. '
-      // Group short sentences together so no step is too brief
       const sentences = raw
         .replace(/([.!?])\s+(?=[A-Z])/g, '$1|||')
         .split('|||')
-        .map(s => s.trim())
+        .map(s => cleanStepText(s))
         .filter(s => s.length > 5);
 
       // Merge very short sentences (< 40 chars) with the next one
@@ -189,7 +196,7 @@ const parseInstructions = (raw) => {
     }
   }
 
-  return parsed.filter(s => s.trim().length > 0 && !isStepHeader(s));
+  return parsed.map(s => cleanStepText(s)).filter(s => s.length > 0 && !isStepHeader(s));
 };
 
 // Convert MealDB meal to our Recipe schema format
@@ -216,11 +223,18 @@ export const convertMealDBToRecipe = (meal) => {
     ? parseInstructions(meal.strInstructions)
     : [];
 
+  const descParts = [];
+  if (meal.strArea) descParts.push(meal.strArea);
+  if (meal.strCategory) descParts.push(meal.strCategory.toLowerCase());
+  const description = descParts.length > 0
+    ? `A classic ${descParts.join(' ')} recipe.`
+    : '';
+
   return {
     source: 'mealdb',
     mealdbId: meal.idMeal,
     title: meal.strMeal,
-    description: meal.strInstructions?.substring(0, 200) || '',
+    description,
     ingredients,
     steps,
     tags: meal.strTags ? meal.strTags.split(',').map(t => t.trim()) : [],

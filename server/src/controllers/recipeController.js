@@ -526,8 +526,12 @@ export const saveRecipe = async (req, res, next) => {
 
         savedRecipeData.mealdbId = mealdbIdString; // Store as string
         savedRecipeData.source = 'mealdb';
-        savedRecipeData.title = meal.strMeal;
-        savedRecipeData.description = meal.strInstructions?.substring(0, 200) || '';
+        const descParts = [];
+        if (meal.strArea) descParts.push(meal.strArea);
+        if (meal.strCategory) descParts.push(meal.strCategory.toLowerCase());
+        savedRecipeData.description = descParts.length > 0
+          ? `A classic ${descParts.join(' ')} recipe.`
+          : '';
         savedRecipeData.image = meal.strMealThumb || '';
         savedRecipeData.cuisine = meal.strArea || '';
         savedRecipeData.category = meal.strCategory || '';
