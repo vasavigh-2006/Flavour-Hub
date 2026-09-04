@@ -206,15 +206,15 @@ const Discover = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {recipes.map((recipe, index) => (
                 <Link
                   key={recipe._id || recipe.mealdbId}
                   to={`/recipes/${recipe._id || recipe.mealdbId}`}
-                  className="recipe-card group stagger-item flex flex-col overflow-hidden rounded-xl border border-gray-200/80 dark:border-gray-700/70 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="recipe-card group stagger-item flex flex-col bg-white/95 dark:bg-gray-800/95 overflow-hidden rounded-2xl border border-orange-100/60 dark:border-gray-700/60 shadow-md hover:shadow-xl transition-all duration-200"
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  <div className="w-full h-32 sm:h-36 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
+                  <div className="w-full h-36 sm:h-40 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
                     {recipe.images && recipe.images[0] ? (
                       <img
                         src={recipe.images[0]}
@@ -231,22 +231,22 @@ const Discover = () => {
                       <div className="text-4xl">🍳</div>
                     )}
                     {recipe.cuisine && (
-                      <span className="absolute top-1.5 right-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold rounded-full">
+                      <span className="absolute top-2 right-2 px-2.5 py-0.5 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-sm">
                         {recipe.cuisine}
                       </span>
                     )}
                   </div>
-                  <div className="p-3 flex-1 flex flex-col justify-between">
+                  <div className="p-3.5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="font-bold text-sm mb-1 text-gray-900 dark:text-white line-clamp-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
+                      <h3 className="font-bold text-sm sm:text-base leading-snug mb-1 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
                         {recipe.title}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">
-                        {recipe.description || 'Delicious recipe!'}
+                      <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1 mb-2">
+                        {recipe.description || 'Delicious recipe waiting for you!'}
                       </p>
                     </div>
-                    <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-[11px] font-semibold">
-                      <span className="text-orange-600 dark:text-orange-400 truncate max-w-[90px]">
+                    <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs font-semibold">
+                      <span className="text-orange-600 dark:text-orange-400 truncate max-w-[110px]">
                         @{recipe.createdBy?.username || 'TheMealDB'}
                       </span>
                       <span className="text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
