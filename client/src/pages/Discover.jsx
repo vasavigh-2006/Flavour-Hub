@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const Discover = () => {
+  const { isAuthenticated } = useAuth();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -242,7 +244,7 @@ const Discover = () => {
             Be the first to create a recipe or select a Category above / use the search bar to discover recipes from around the world!
           </p>
           <Link
-            to="/recipes/new"
+            to={isAuthenticated ? '/recipes/create' : '/login'}
             className="btn-premium inline-block"
           >
             ✨ Create First Recipe
