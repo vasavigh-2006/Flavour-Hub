@@ -531,6 +531,7 @@ export const saveRecipe = async (req, res, next) => {
 
         savedRecipeData.mealdbId = mealdbIdString; // Store as string
         savedRecipeData.source = 'mealdb';
+        savedRecipeData.title = meal.strMeal;
         const descParts = [];
         if (meal.strArea) descParts.push(meal.strArea);
         if (meal.strCategory) descParts.push(meal.strCategory.toLowerCase());
