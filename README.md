@@ -2,6 +2,8 @@
 
 > **Discover, Create & Share Recipes with the World**
 
+🌐 **Live Demo:** [FlavourHub — Your Recipe Community](https://flavour-hub-client.vercel.app/)
+
 FlavourHub is a full-stack recipe platform where users can explore thousands of recipes from around the globe, create and share their own community recipes, save favourites, and download beautifully formatted recipe PDFs — all in one place.
 
 ---
