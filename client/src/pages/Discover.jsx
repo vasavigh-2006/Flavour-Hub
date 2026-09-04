@@ -235,7 +235,19 @@ const Discover = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
         </div>
       ) : recipes.length === 0 ? (
-        <div className="text-center py-12 text-premium-subtle dark:text-white">No recipes found</div>
+        <div className="glass-card p-12 text-center my-8">
+          <div className="text-5xl mb-4">🍳</div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No community recipes found yet</h3>
+          <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto mb-6 text-sm">
+            Be the first to create a recipe or select a Category above / use the search bar to discover recipes from around the world!
+          </p>
+          <Link
+            to="/recipes/new"
+            className="btn-premium inline-block"
+          >
+            ✨ Create First Recipe
+          </Link>
+        </div>
       ) : (
         <>
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">

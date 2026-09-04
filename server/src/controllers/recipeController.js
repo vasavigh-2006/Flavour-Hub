@@ -128,13 +128,8 @@ export const getRecipes = async (req, res, next) => {
         logger.error('Error fetching MealDB recipes by cuisine', error);
       }
     } else if (!q && !category && !cuisine) {
-      // No filters applied - fetch random meals from TheMealDB
-      try {
-        const meals = await getRandomMeals(15); // Get 15 random meals
-        mealdbRecipes = meals.map(convertMealDBToRecipe);
-      } catch (error) {
-        logger.error('Error fetching random MealDB recipes', error);
-      }
+      // Option 2: Show only community user-created recipes on initial load (no random MealDB fallback)
+      mealdbRecipes = [];
     }
 
     // Combine user recipes and TheMealDB recipes
