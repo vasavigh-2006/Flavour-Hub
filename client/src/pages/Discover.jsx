@@ -206,43 +206,50 @@ const Discover = () => {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
               {recipes.map((recipe, index) => (
                 <Link
                   key={recipe._id || recipe.mealdbId}
                   to={`/recipes/${recipe._id || recipe.mealdbId}`}
-                  className="recipe-card group stagger-item"
-                  style={{ animationDelay: `${index * 0.05}s` }}
+                  className="recipe-card group stagger-item flex flex-col overflow-hidden rounded-xl border border-gray-200/80 dark:border-gray-700/70 shadow-sm hover:shadow-md transition-all duration-200"
+                  style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  <div className="w-full h-48 bg-gradient-to-br from-orange-200 to-amber-300 flex items-center justify-center overflow-hidden">
+                  <div className="w-full h-32 sm:h-36 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
                     {recipe.images && recipe.images[0] ? (
                       <img
                         src={recipe.images[0]}
                         alt={recipe.title}
-                        className="recipe-card-image"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : recipe.image ? (
                       <img
                         src={recipe.image}
                         alt={recipe.title}
-                        className="recipe-card-image"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="text-6xl">🍳</div>
+                      <div className="text-4xl">🍳</div>
+                    )}
+                    {recipe.cuisine && (
+                      <span className="absolute top-1.5 right-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold rounded-full">
+                        {recipe.cuisine}
+                      </span>
                     )}
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg mb-1 text-gray-900 dark:text-white line-clamp-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition">
-                      {recipe.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
-                      {recipe.description || 'Delicious recipe waiting for you!'}
-                    </p>
-                    <div className="mt-auto pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs font-semibold">
-                      <span className="text-orange-600 dark:text-orange-400">
+                  <div className="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-bold text-sm mb-1 text-gray-900 dark:text-white line-clamp-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
+                        {recipe.title}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">
+                        {recipe.description || 'Delicious recipe!'}
+                      </p>
+                    </div>
+                    <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-[11px] font-semibold">
+                      <span className="text-orange-600 dark:text-orange-400 truncate max-w-[90px]">
                         @{recipe.createdBy?.username || 'TheMealDB'}
                       </span>
-                      <span className="text-gray-500 dark:text-gray-400">
+                      <span className="text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
                         ❤️ {recipe.likesCount || 0}
                       </span>
                     </div>
