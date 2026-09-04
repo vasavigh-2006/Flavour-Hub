@@ -347,16 +347,41 @@ const RecipeDetail = () => {
       )}
 
       {/* Recipe Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">{recipe.title}</h1>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-white">
-            {recipe.prepTime && <span>Prep: {recipe.prepTime} min</span>}
-            {recipe.cookTime && <span>Cook: {recipe.cookTime} min</span>}
-            {recipe.servings && <span>Serves: {recipe.servings}</span>}
-            {recipe.cuisine && <span>{recipe.cuisine}</span>}
+      <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 mb-8">
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-4 text-gray-900 dark:text-white tracking-tight">
+          {recipe.title}
+        </h1>
+        
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold">
+            {recipe.prepTime && (
+              <span className="px-3 py-1 bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 rounded-full border border-amber-200 dark:border-amber-800">
+                ⏱️ Prep: {recipe.prepTime} min
+              </span>
+            )}
+            {recipe.cookTime && (
+              <span className="px-3 py-1 bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 rounded-full border border-amber-200 dark:border-amber-800">
+                🍳 Cook: {recipe.cookTime} min
+              </span>
+            )}
+            {recipe.servings && (
+              <span className="px-3 py-1 bg-orange-100 dark:bg-orange-950/60 text-orange-900 dark:text-orange-200 rounded-full border border-orange-200 dark:border-orange-800">
+                👥 Serves: {recipe.servings}
+              </span>
+            )}
+            {recipe.cuisine && (
+              <span className="px-3 py-1 bg-orange-500 text-white font-bold rounded-full shadow-sm">
+                🌍 {recipe.cuisine}
+              </span>
+            )}
+            {recipe.category && (
+              <span className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">
+                🏷️ {recipe.category}
+              </span>
+            )}
           </div>
-          <div className="flex items-center space-x-4">
+
+          <div className="flex items-center gap-3">
             <button
               onClick={handleLike}
               disabled={isMealDBRecipe || !isAuthenticated}
@@ -367,23 +392,23 @@ const RecipeDetail = () => {
                   ? 'Cannot like external recipes from TheMealDB'
                   : 'Like this recipe'
               }
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-bold transition-all shadow-sm ${
                 isMealDBRecipe || !isAuthenticated
-                  ? 'bg-gray-100 dark:bg-gray-700 opacity-60 cursor-not-allowed'
-                  : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 opacity-70 cursor-not-allowed'
+                  : 'bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60'
               }`}
             >
               <span>❤️</span>
               <span>{recipe.likesCount || 0}</span>
             </button>
             {isAuthenticated && (
-            <button
-              onClick={handleSave}
+              <button
+                onClick={handleSave}
                 title={isSaved ? 'Unsave this recipe' : 'Save this recipe'}
-                className={`px-4 py-2 rounded-md ${
+                className={`px-4 py-2 rounded-xl font-bold transition-all shadow-sm ${
                   isSaved
                     ? 'bg-red-600 text-white hover:bg-red-700'
-                    : 'bg-primary-600 text-white hover:bg-primary-700'
+                    : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
               >
                 {isSaved ? '💾 Saved' : '💾 Save'}
@@ -393,7 +418,7 @@ const RecipeDetail = () => {
               <button
                 onClick={handleDownloadPDF}
                 title="Download recipe as PDF"
-                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-md flex items-center gap-1.5 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-xl flex items-center gap-1.5 transition-all duration-300 font-bold shadow-md hover:shadow-lg"
               >
                 📥 Download PDF
               </button>
@@ -401,9 +426,9 @@ const RecipeDetail = () => {
             {!isAuthenticated && (
               <Link
                 to="/login"
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                className="px-4 py-2 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-all shadow-sm"
                 title="Login to save recipes"
-            >
+              >
                 💾 Save
               </Link>
             )}
@@ -411,13 +436,13 @@ const RecipeDetail = () => {
               <>
                 <Link
                   to={`/recipes/${id}/edit`}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-xl font-bold hover:bg-gray-700 transition-all"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all"
                 >
                   🗑️ Delete
                 </button>
@@ -426,31 +451,36 @@ const RecipeDetail = () => {
           </div>
         </div>
 
+        {/* High-visibility Description Box */}
+        {recipe.description && (
+          <div className="bg-orange-50/90 dark:bg-gray-900/90 border-l-4 border-orange-500 p-4 rounded-r-xl shadow-sm mb-4">
+            <p className="text-gray-900 dark:text-gray-100 text-base font-semibold leading-relaxed">
+              {recipe.description}
+            </p>
+          </div>
+        )}
+
         {/* Contributor Card */}
         {recipe.createdBy && (
-          <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-4">
+          <div className="bg-gray-50 dark:bg-gray-700/60 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
             <div className="flex items-center space-x-3">
               {recipe.createdBy.avatarUrl && (
                 <img
                   src={recipe.createdBy.avatarUrl}
                   alt={recipe.createdBy.username}
-                  className="w-12 h-12 rounded-full"
+                  className="w-12 h-12 rounded-full border-2 border-orange-400"
                 />
               )}
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white">
+                <p className="font-bold text-gray-900 dark:text-white">
                   {recipe.createdBy.firstName} {recipe.createdBy.lastName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-white">
+                <p className="text-sm font-medium text-orange-600 dark:text-orange-300">
                   @{recipe.createdBy.username}
                 </p>
               </div>
             </div>
           </div>
-        )}
-
-        {recipe.description && (
-          <p className="text-gray-700 dark:text-white mb-4">{recipe.description}</p>
         )}
       </div>
 
