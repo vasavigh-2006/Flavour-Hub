@@ -423,6 +423,17 @@ const RecipeDetail = () => {
                 📥 Download PDF
               </button>
             )}
+            {recipe.youtubeUrl && (
+              <a
+                href={recipe.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Watch recipe video on YouTube"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl flex items-center gap-1.5 transition-all duration-300 font-bold shadow-md hover:shadow-lg"
+              >
+                ▶️ Watch on YouTube
+              </a>
+            )}
             {!isAuthenticated && (
               <Link
                 to="/login"

@@ -241,6 +241,7 @@ export const convertMealDBToRecipe = (meal) => {
     cuisine: meal.strArea || '',
     category: meal.strCategory || '',
     images: meal.strMealThumb ? [meal.strMealThumb] : [],
+    youtubeUrl: meal.strYoutube || '',
     isPublic: true,
   };
 };
