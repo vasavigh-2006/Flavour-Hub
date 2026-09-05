@@ -89,6 +89,9 @@ const Discover = () => {
     }
   };
 
+  const userRecipes = recipes.filter(r => r.source === 'user' || Boolean(r.createdBy));
+  const otherRecipes = recipes.filter(r => r.source === 'mealdb' || (!r.createdBy && r.source !== 'user'));
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Discover Recipes</h1>
@@ -162,19 +165,16 @@ const Discover = () => {
         </div>
       )}
 
-      {/* Recipes Section - Shown at the TOP */}
+      {/* TOP SECTION: ONLY User Community Recipes */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-premium dark:text-white flex items-center gap-2">
-            <span>
-              {filters.category
-                ? `🍲 ${filters.category} Recipes`
-                : filters.cuisine
-                ? `🍲 ${filters.cuisine} Recipes`
-                : filters.q
-                ? `🔍 Results for "${filters.q}"`
-                : '✨ Community Recipes'}
-            </span>
+            <span>✨ Community Recipes</span>
+            {userRecipes.length > 0 && (
+              <span className="text-xs font-bold px-2.5 py-0.5 bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-200 rounded-full border border-orange-200 dark:border-orange-800">
+                {userRecipes.length}
+              </span>
+            )}
           </h2>
           <Link
             to={isAuthenticated ? '/recipes/create' : '/login'}
@@ -188,103 +188,78 @@ const Discover = () => {
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
           </div>
-        ) : recipes.length === 0 ? (
-          <div className="glass-card p-12 text-center my-4">
-            <div className="text-5xl mb-4">🍳</div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No recipes found</h3>
-            <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto mb-6 text-sm">
-              {filters.category || filters.cuisine || filters.q
-                ? 'Try clearing your search or category filters to see more recipes!'
-                : 'Be the first to create a recipe or select a Category below to discover recipes from around the world!'}
+        ) : userRecipes.length === 0 ? (
+          <div className="glass-card p-10 text-center my-4">
+            <div className="text-5xl mb-3">🍳</div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No community recipes found</h3>
+            <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto mb-4 text-sm">
+              {filters.q
+                ? `No community recipes match "${filters.q}".`
+                : 'Be the first to create and share a community recipe!'}
             </p>
             <Link
               to={isAuthenticated ? '/recipes/create' : '/login'}
-              className="btn-premium inline-block"
+              className="btn-premium inline-block text-sm py-2 px-5"
             >
               ✨ Create First Recipe
             </Link>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {recipes.map((recipe, index) => (
-                <Link
-                  key={recipe._id || recipe.mealdbId}
-                  to={`/recipes/${recipe._id || recipe.mealdbId}`}
-                  className="recipe-card group stagger-item flex flex-col bg-white/95 dark:bg-gray-800/95 overflow-hidden rounded-2xl border border-orange-100/60 dark:border-gray-700/60 shadow-md hover:shadow-xl transition-all duration-200"
-                  style={{ animationDelay: `${index * 0.04}s` }}
-                >
-                  <div className="w-full h-36 sm:h-40 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
-                    {recipe.images && recipe.images[0] ? (
-                      <img
-                        src={recipe.images[0]}
-                        alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : recipe.image ? (
-                      <img
-                        src={recipe.image}
-                        alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="text-4xl">🍳</div>
-                    )}
-                    {recipe.cuisine && (
-                      <span className="absolute top-2 right-2 px-2.5 py-0.5 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-sm">
-                        {recipe.cuisine}
-                      </span>
-                    )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {userRecipes.map((recipe, index) => (
+              <Link
+                key={recipe._id || recipe.mealdbId}
+                to={`/recipes/${recipe._id || recipe.mealdbId}`}
+                className="recipe-card group stagger-item flex flex-col bg-white/95 dark:bg-gray-800/95 overflow-hidden rounded-2xl border border-orange-100/60 dark:border-gray-700/60 shadow-md hover:shadow-xl transition-all duration-200"
+                style={{ animationDelay: `${index * 0.04}s` }}
+              >
+                <div className="w-full h-36 sm:h-40 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
+                  {recipe.images && recipe.images[0] ? (
+                    <img
+                      src={recipe.images[0]}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : recipe.image ? (
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="text-4xl">🍳</div>
+                  )}
+                  {recipe.cuisine && (
+                    <span className="absolute top-2 right-2 px-2.5 py-0.5 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-sm">
+                      {recipe.cuisine}
+                    </span>
+                  )}
+                </div>
+                <div className="p-3.5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base leading-snug mb-1 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
+                      {recipe.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1 mb-2">
+                      {recipe.description || 'Delicious recipe waiting for you!'}
+                    </p>
                   </div>
-                  <div className="p-3.5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-bold text-sm sm:text-base leading-snug mb-1 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
-                        {recipe.title}
-                      </h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1 mb-2">
-                        {recipe.description || 'Delicious recipe waiting for you!'}
-                      </p>
-                    </div>
-                    <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs font-semibold">
-                      <span className="text-orange-600 dark:text-orange-400 truncate max-w-[110px]">
-                        @{recipe.createdBy?.username || 'TheMealDB'}
-                      </span>
-                      <span className="text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
-                        ❤️ {recipe.likesCount || 0}
-                      </span>
-                    </div>
+                  <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs font-semibold">
+                    <span className="text-orange-600 dark:text-orange-400 truncate max-w-[110px]">
+                      @{recipe.createdBy?.username || 'user'}
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                      ❤️ {recipe.likesCount || 0}
+                    </span>
                   </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {pagination && pagination.pages > 1 && (
-              <div className="mt-8 flex justify-center gap-2">
-                <button
-                  onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
-                  disabled={filters.page === 1}
-                  className="px-4 py-2 border rounded-md disabled:opacity-50 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
-                >
-                  Previous
-                </button>
-                <span className="px-4 py-2 text-gray-900 dark:text-white font-semibold">
-                  Page {pagination.page} of {pagination.pages}
-                </span>
-                <button
-                  onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
-                  disabled={filters.page >= pagination.pages}
-                  className="px-4 py-2 border rounded-md disabled:opacity-50 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </>
+                </div>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Categories Section */}
+      {/* MIDDLE SECTION: Categories Section */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-premium dark:text-white">Browse by Category</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -324,7 +299,7 @@ const Discover = () => {
         </div>
       </div>
 
-      {/* Cuisines Section */}
+      {/* MIDDLE SECTION: Cuisines Section */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-4 text-premium dark:text-white">Explore by Cuisine</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -363,6 +338,103 @@ const Discover = () => {
           ))}
         </div>
       </div>
+
+      {/* BOTTOM SECTION: Other World Recipes (TheMealDB) DOWN ONLY */}
+      {otherRecipes.length > 0 && (
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-premium dark:text-white flex items-center gap-2">
+              <span>
+                {filters.category
+                  ? `🌐 ${filters.category} World Recipes`
+                  : filters.cuisine
+                  ? `🌐 ${filters.cuisine} World Recipes`
+                  : filters.q
+                  ? `🌐 World Recipe Results for "${filters.q}"`
+                  : '🌐 World Recipes (TheMealDB)'}
+              </span>
+              <span className="text-xs font-bold px-2.5 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">
+                {otherRecipes.length}
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {otherRecipes.map((recipe, index) => (
+              <Link
+                key={recipe._id || recipe.mealdbId}
+                to={`/recipes/${recipe._id || recipe.mealdbId}`}
+                className="recipe-card group stagger-item flex flex-col bg-white/95 dark:bg-gray-800/95 overflow-hidden rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-md hover:shadow-xl transition-all duration-200"
+                style={{ animationDelay: `${index * 0.04}s` }}
+              >
+                <div className="w-full h-36 sm:h-40 bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center overflow-hidden relative">
+                  {recipe.images && recipe.images[0] ? (
+                    <img
+                      src={recipe.images[0]}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : recipe.image ? (
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="text-4xl">🍳</div>
+                  )}
+                  {recipe.cuisine && (
+                    <span className="absolute top-2 right-2 px-2.5 py-0.5 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-sm">
+                      {recipe.cuisine}
+                    </span>
+                  )}
+                </div>
+                <div className="p-3.5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base leading-snug mb-1 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition" title={recipe.title}>
+                      {recipe.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-1 mb-2">
+                      {recipe.description || 'Delicious recipe!'}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between text-xs font-semibold">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      TheMealDB
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
+                      ❤️ {recipe.likesCount || 0}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <div className="mt-8 flex justify-center gap-2">
+              <button
+                onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
+                disabled={filters.page === 1}
+                className="px-4 py-2 border rounded-md disabled:opacity-50 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-gray-900 dark:text-white font-semibold">
+                Page {pagination.page} of {pagination.pages}
+              </span>
+              <button
+                onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
+                disabled={filters.page >= pagination.pages}
+                className="px-4 py-2 border rounded-md disabled:opacity-50 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
