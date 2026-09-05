@@ -45,12 +45,14 @@ const FoodBackground = () => {
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
             backgroundRepeat: 'no-repeat',
+            filter: 'blur(3px)',
+            transform: 'scale(1.03)',
           }}
         />
       ))}
 
-      {/* Gradient overlay — lighter in light mode so food photos show through vividly */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-amber-50/30 to-white/40 dark:from-black/70 dark:via-black/60 dark:to-black/70 transition-colors duration-500" />
+      {/* Gradient overlay with slight backdrop blur */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-amber-50/30 to-white/40 dark:from-black/70 dark:via-black/60 dark:to-black/70 backdrop-blur-[2px] transition-colors duration-500" />
 
       {/* Soft vignette around edges */}
       <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/10 dark:to-black/50" />
